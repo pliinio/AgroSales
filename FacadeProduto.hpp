@@ -5,9 +5,9 @@
 #include <vector>
 #include <string>
 
-class FacadeCadastro {
+class FacadeProduto {
 public:
-    static FacadeCadastro& getInstance();
+    static FacadeProduto& getInstance();
 
     void loadProdutos();  
     void saveProdutos();  
@@ -18,11 +18,13 @@ public:
     void exibirEstoque();
     bool existsNomeProduto(const std::string& nome);
     bool existsProduto(int id);
-    void vendaProduto(int id, int quantidadeVenda);
+    void vendaProduto(void);
+    Produto* buscarProdutoPorNome(const std::string& nome);
+
 
 
 private:
-    FacadeCadastro() { loadProdutos(); }
+    FacadeProduto() { loadProdutos(); }
     std::vector<Produto> produtos;
     
 };
