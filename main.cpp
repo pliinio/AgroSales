@@ -10,7 +10,7 @@ void limparTela() {
     #ifdef _WIN32
         system("cls"); // Windows
     #else
-        system("clear"); // Unix/Linux/MacOS
+        (void)system("clear"); // Unix/Linux/MacOS
     #endif
 }
 
@@ -29,57 +29,56 @@ void aguardarEntrada() {
     std::cin.get(); // Aguarda o usuário pressionar Enter
 }
 
-void exibirMenu(FacadeCadastro& facade, const std::string& filename) {
-    bool loggedIn = false;
-
-    while (!loggedIn) {
-        // Menu de login
-    }
+void exibirMenu(FacadeProduto& facade, const std::string& filename) {
 
     while (true) {
         limparTela();
         std::cout << "Menu:\n";
-        std::cout << "1. Adicionar Produto\n";
-        std::cout << "2. Atualizar Estoque\n";
-        std::cout << "3. Vender Produto\n";
+        std::cout << "1. Cadastrar Produto\n";
+        std::cout << "2. Entrada de Material\n";
+        std::cout << "3. Registrar Venda\n";
         std::cout << "4. Exibir Dados\n";
         std::cout << "5. Sair e Salvar\n";
-        std::cout << "Escolha uma opcao: ";
+        std::cout << "Escolha uma opção: ";
 
         int opcao;
         std::cin >> opcao;
         limparEntrada();
 
-        switch (opcao) {
-            case 1: {
-                int id;
-                std::string nome;
-                float preco;
-                int quantidade;
+            switch (opcao) {
+                case 1: {
+                    int id;
+                    std::string nome;
+                    float preco;
+                    int quantidade;
 
-                std::cout << "Digite o Id do produto: ";
-                std::cin >> id;
-                limparEntrada();
+                    std::cout << "Digite o Id do produto: ";
+                    std::cin >> id;
+                    limparEntrada();
 
-                if (facade.buscarProduto(id) != nullptr) {
-                    std::cerr << "Produto com esse Id já existe!\n";
+                    if (facade.existsProduto(id)) {
+                        std::cerr << "Produto com esse Id já existe!\n";
+                        break;  // Impede continuação
+                    }
+
+                    std::cout << "Digite o Nome do produto: ";
+                    std::getline(std::cin, nome);
+
+                    if (facade.existsNomeProduto(nome)) {
+                        std::cerr << "Produto com esse nome já existe!\n";
+                        break;  // Impede continuação
+                    }
+
+                    std::cout << "Digite o Preço do produto: ";
+                    std::cin >> preco;
+
+                    std::cout << "Digite a Quantidade do produto: ";
+                    std::cin >> quantidade;
+
+                    Produto produto(id, nome, preco, quantidade);
+                    facade.cadastrarProduto(produto);
                     break;
                 }
-
-                std::cout << "Digite o Nome do produto: ";
-                std::getline(std::cin, nome);
-
-                std::cout << "Digite o Preço do produto: ";
-                std::cin >> preco;
-
-                std::cout << "Digite a Quantidade do produto: ";
-                std::cin >> quantidade;
-
-                Produto produto(id, nome, preco, quantidade);
-                facade.cadastrarProduto(produto);
-                std::cout << "Produto adicionado com sucesso!\n";
-                break;
-            }
             case 2: {
                 int id, quantidadeAdicional;
 
@@ -141,7 +140,7 @@ void exibirMenu(FacadeCadastro& facade, const std::string& filename) {
 
 
 int main() {
-    FacadeCadastro& facade = FacadeCadastro::getInstance();
+    FacadeProduto& facade = FacadeProduto::getInstance();
     facade.loadProdutos();
 
     exibirMenu(facade, "produtos.txt");
