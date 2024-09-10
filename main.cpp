@@ -4,6 +4,7 @@
 #include <limits>
 #include <thread>
 #include <chrono>
+#include <fstream>
 #include <cstdlib>  // Para system()
 
 void limparTela() {
@@ -99,26 +100,14 @@ void exibirMenu(FacadeProduto& facade, const std::string& filename) {
                 std::cout << "Estoque atualizado com sucesso!\n";
                 break;
             }
-            case 3: {
-                int id, quantidadeVenda;
-
-                std::cout << "Digite o Id do produto: ";
-                std::cin >> id;
-                limparEntrada();
-
-                Produto* produto = facade.buscarProduto(id);
-                if (produto == nullptr) {
-                    std::cerr << "Produto com esse Id não existe!\n";
+                case 3: {
+                    limparTela();
+                    facade.vendaProduto(); 
+                    pausarTela(3); // Pausa por 3 segundos
                     break;
                 }
 
-                std::cout << "Quantidade de " << produto->getNome() << " a ser vendida: ";
-                std::cin >> quantidadeVenda;
-                limparEntrada();
 
-                facade.vendaProduto(id, quantidadeVenda);
-                break;
-            }
             case 4: {
                 limparTela();
                 facade.exibirEstoque();
