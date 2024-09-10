@@ -4,12 +4,12 @@
 #include <sstream>
 #include <algorithm>
 
-FacadeCadastro& FacadeCadastro::getInstance() {
-    static FacadeCadastro instance;
+FacadeProduto& FacadeProduto::getInstance() {
+    static FacadeProduto instance;
     return instance;
 }
 
-void FacadeCadastro::loadProdutos() {
+void FacadeProduto::loadProdutos() {
     std::ifstream file("produtos.txt");
     if (file.is_open()) {
         produtos.clear(); // Limpa a lista antes de carregar novos dados
@@ -27,7 +27,7 @@ void FacadeCadastro::loadProdutos() {
     }
 }
 
-void FacadeCadastro::saveProdutos() {
+void FacadeProduto::saveProdutos() {
     std::ofstream file("produtos.txt");
     if (file.is_open()) {
         for (const auto& produto : produtos) {
@@ -40,21 +40,35 @@ void FacadeCadastro::saveProdutos() {
     }
 }
 
-bool FacadeCadastro::existsProduto(int id) {
+void FacadeProduto::cadastrarProduto(const Produto& produto) {
+    if (existsProduto(produto.getId())) {
+        std::cerr << "Produto com esse ID já existe!\n";
+        return;  // Impede continuação
+    }
+
+    if (existsNomeProduto(produto.getNome())) {
+        std::cerr << "Produto com esse nome já existe!\n";
+        return;  // Impede continuação
+    }
+
+    produtos.push_back(produto);
+    saveProdutos();  // Salva a lista atualizada após adicionar o produto
+    std::cout << "Produto adicionado com sucesso!\n";
+}
+
+bool FacadeProduto::existsProduto(int id) {
     return std::any_of(produtos.begin(), produtos.end(),
                        [id](const Produto& p) { return p.getId() == id; });
 }
 
-void FacadeCadastro::cadastrarProduto(const Produto& produto) {
-    if (!existsProduto(produto.getId())) {
-        produtos.push_back(produto);
-        saveProdutos(); // Salva a lista atualizada após adicionar o produto
-    } else {
-        std::cerr << "Produto já existe.\n";
-    }
+bool FacadeProduto::existsNomeProduto(const std::string& nome) {
+    return std::any_of(produtos.begin(), produtos.end(),
+                       [nome](const Produto& p) { return p.getNome() == nome; });
 }
 
-void FacadeCadastro::entradaMaterial(int id, int quantidadeAdicional) {
+
+
+void FacadeProduto::entradaMaterial(int id, int quantidadeAdicional) {
     for (auto& produto : produtos) {
         if (produto.getId() == id) {
             int novaQuantidade = produto.getQuantidade() + quantidadeAdicional;
@@ -68,7 +82,7 @@ void FacadeCadastro::entradaMaterial(int id, int quantidadeAdicional) {
 }
 
 
-Produto* FacadeCadastro::buscarProduto(int id) {
+Produto* FacadeProduto::buscarProduto(int id) {
     for (auto& produto : produtos) {
         if (produto.getId() == id) {
             return &produto;
@@ -77,18 +91,13 @@ Produto* FacadeCadastro::buscarProduto(int id) {
     return nullptr;
 }
 
-void FacadeCadastro::exibirEstoque() {
+void FacadeProduto::exibirEstoque() {
     for (const auto& produto : produtos) {
         std::cout << produto.toString() << std::endl;
     }
 }
 
-bool FacadeCadastro::existsNomeProduto(const std::string& nome) {
-    return std::any_of(produtos.begin(), produtos.end(),
-                       [nome](const Produto& p) { return p.getNome() == nome; });
-}
-
-void FacadeCadastro::vendaProduto(int id, int quantidadeVenda) {
+void FacadeProduto::vendaProduto(int id, int quantidadeVenda) {
     for (auto& produto : produtos) {
         if (produto.getId() == id) {
             if (produto.getQuantidade() >= quantidadeVenda) {
