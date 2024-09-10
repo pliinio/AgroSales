@@ -1,8 +1,28 @@
 #include "FacadeProduto.hpp"
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <thread>
 #include <algorithm>
+#include <chrono>
+
+void pausar(int segundos) {
+    std::this_thread::sleep_for(std::chrono::seconds(segundos));
+}
+
+void limparMenu() {
+    #ifdef _WIN32
+        system("cls"); // Windows
+    #else
+        (void)system("clear"); // Unix/Linux/MacOS
+    #endif
+}
+
+void limparBuffer() {
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
 
 FacadeProduto& FacadeProduto::getInstance() {
     static FacadeProduto instance;
@@ -41,15 +61,6 @@ void FacadeProduto::saveProdutos() {
 }
 
 void FacadeProduto::cadastrarProduto(const Produto& produto) {
-    if (existsProduto(produto.getId())) {
-        std::cerr << "Produto com esse ID já existe!\n";
-        return;  // Impede continuação
-    }
-
-    if (existsNomeProduto(produto.getNome())) {
-        std::cerr << "Produto com esse nome já existe!\n";
-        return;  // Impede continuação
-    }
 
     produtos.push_back(produto);
     saveProdutos();  // Salva a lista atualizada após adicionar o produto
@@ -97,18 +108,69 @@ void FacadeProduto::exibirEstoque() {
     }
 }
 
-void FacadeProduto::vendaProduto(int id, int quantidadeVenda) {
-    for (auto& produto : produtos) {
-        if (produto.getId() == id) {
-            if (produto.getQuantidade() >= quantidadeVenda) {
-                produto.setQuantidade(produto.getQuantidade() - quantidadeVenda);
-                saveProdutos();
-                std::cout << "Venda realizada com sucesso! Estoque atualizado.\n";
-            } else {
-                std::cerr << "Quantidade insuficiente em estoque para realizar a venda.\n";
+void FacadeProduto::vendaProduto() {
+    std::string nome;
+    int quantidadeVenda;
+    float carrinho = 0.0;
+    bool finalizar = false;
+
+    while (!finalizar) {
+        limparMenu();
+        std::cout << "Total do carrinho: " << carrinho << "R$\n";
+        std::cout << "Digite o nome do item a ser vendido, ou 'FIM' para finalizar a compra: ";
+        std::getline(std::cin, nome);
+
+        if (nome == "FIM") {
+            finalizar = true;
+        } else {
+            Produto* produto = nullptr;
+            for (auto& p : produtos) {
+                if (p.getNome() == nome) {
+                    produto = &p;
+                    break;
+                    return;
+                }
             }
-            return;
+
+            if (produto != nullptr) {
+                std::cout << "Quantidade de " << produto->getNome() << " a ser vendida: ";
+                std::cin >> quantidadeVenda;
+                limparBuffer();
+
+                if (produto->getQuantidade() >= quantidadeVenda) {
+                    float totalItem = quantidadeVenda * produto->getPreco();
+                    carrinho += totalItem;
+                    produto->setQuantidade(produto->getQuantidade() - quantidadeVenda);
+                    saveProdutos();
+                    std::cout << "Adicionado ao carrinho " << quantidadeVenda << " unidades de " << produto->getNome() << " vendidas.\n";
+                    pausar(3);
+                } else {
+                    std::cerr << "Quantidade insuficiente em estoque para " << produto->getNome() << ".\n";
+                    pausar(3);
+                }
+            } else {
+                std::cerr << "Produto com nome " << nome << " não encontrado.\n";
+                pausar(3);
+            }
         }
     }
-    std::cerr << "Produto não encontrado.\n";
+
+    // Salvar o valor total da venda em vendas.txt
+    std::ofstream file("vendas.txt", std::ios::app);
+    if (file.is_open()) {
+        file << "Venda total: " << std::fixed << std::setprecision(2) << carrinho << "R$\n";
+        file.close();
+    }
+
+    std::cout << "Total da venda: " << std::fixed << std::setprecision(2) << carrinho << "R$\n";
+    //pausar(3);
+}
+
+Produto* FacadeProduto::buscarProdutoPorNome(const std::string& nome) {
+    for (auto& produto : produtos) {
+        if (produto.getNome() == nome) {
+            return &produto;
+        }
+    }
+    return nullptr;
 }
