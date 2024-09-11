@@ -4,15 +4,16 @@ Este é um sistema simples de gestão de produtos, desenvolvido em C++, que perm
 
 ## Funcionalidades
 
-- **Cadastro de Produtos**: Adicione produtos com ID, nome, preço e quantidade.
-- **Atualização de Estoque**: Atualize o estoque com entrada de material.
-- **Venda de Produtos**: Registre vendas e reduza automaticamente o estoque.
-- **Exibição de Produtos**: Mostra os detalhes de cada produto de forma organizada.
+- **Cadastrar Produto**: Adicione produtos com ID, nome, preço e quantidade.
+- **Entrada de Material**: Atualize o estoque com entrada de material.
+- **Registrar Venda**: Registre vendas, reduza automaticamente o estoque e some o valor de cada venda no caixa. Por segurança cada venda é registrada com data e valor em 'vendas.txt'.
+- **Exibir estoque**: Mostra os detalhes de cada produto de forma organizada.
 
 ## Padrões de Projeto Utilizados
 
 - **Singleton**: Para garantir uma única instância de `FacadeProduto` em todo o sistema.
 - **Facade**: Para simplificar a interação com os módulos de gerenciamento de produtos.
+- **Observer**: Observa o método de venda e notifica o caixa a cada nova venda somando no seu valor atual.
   
 ## Como Executar
 
