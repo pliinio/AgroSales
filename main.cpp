@@ -1,5 +1,6 @@
 #include "FacadeProduto.hpp"
 #include "Produto.hpp"
+#include "CaixaObserver.hpp"
 #include <iostream>
 #include <limits>
 #include <thread>
@@ -31,6 +32,8 @@ void aguardarEntrada() {
 }
 
 void exibirMenu(FacadeProduto& facade, const std::string& filename) {
+    CaixaObserver caixaObserver;
+    facade.addObserver(&caixaObserver);
 
     while (true) {
         limparTela();
@@ -73,7 +76,7 @@ void exibirMenu(FacadeProduto& facade, const std::string& filename) {
                     std::cout << "Digite o Preço do produto: ";
                     std::cin >> preco;
 
-                    std::cout << "Digite a Quantidade do produto: ";
+                    std::cout << "Digite a Quantidade do produto no estoque: ";
                     std::cin >> quantidade;
 
                     Produto produto(id, nome, preco, quantidade);
@@ -131,8 +134,8 @@ void exibirMenu(FacadeProduto& facade, const std::string& filename) {
 int main() {
     FacadeProduto& facade = FacadeProduto::getInstance();
     facade.loadProdutos();
-
+    
     exibirMenu(facade, "produtos.txt");
-
+    
     return 0;
 }
