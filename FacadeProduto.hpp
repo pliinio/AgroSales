@@ -2,6 +2,9 @@
 #define FACADEPRODUTO_HPP
 
 #include "Produto.hpp"
+#include "Observer.hpp"
+#include "CaixaObserver.hpp"
+#include <algorithm>
 #include <vector>
 #include <string>
 
@@ -21,12 +24,18 @@ public:
     void vendaProduto(void);
     Produto* buscarProdutoPorNome(const std::string& nome);
 
+    void addObserver(Observer* observer);
+    void removeObserver(Observer* observer);
+
 
 
 private:
     FacadeProduto() { loadProdutos(); }
     std::vector<Produto> produtos;
+    std::vector<Observer*> observers;
+
+    void notifyObservers(float valorVenda);
     
 };
 
-#endif 
+#endif
