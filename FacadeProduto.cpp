@@ -1,4 +1,5 @@
 #include "FacadeProduto.hpp"
+#include "Observer.hpp"
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -6,6 +7,21 @@
 #include <thread>
 #include <algorithm>
 #include <chrono>
+
+std::string obterDataEHoraAtual() {
+    // Obter o tempo atual
+    auto now = std::chrono::system_clock::now();
+    std::time_t tempoAtual = std::chrono::system_clock::to_time_t(now);
+
+    // Converter para o formato local de data e hora
+    std::tm* now_tm = std::localtime(&tempoAtual);
+
+    // Criar uma string formatada com a data e a hora
+    std::ostringstream oss;
+    oss << std::put_time(now_tm, "%d-%m-%Y %H:%M:%S");
+
+    return oss.str();
+}
 
 void pausar(int segundos) {
     std::this_thread::sleep_for(std::chrono::seconds(segundos));
@@ -142,7 +158,7 @@ void FacadeProduto::vendaProduto() {
                     carrinho += totalItem;
                     produto->setQuantidade(produto->getQuantidade() - quantidadeVenda);
                     saveProdutos();
-                    std::cout << "Adicionado ao carrinho " << quantidadeVenda << " unidades de " << produto->getNome() << " vendidas.\n";
+                    std::cout << "Adicionado ao carrinho " << quantidadeVenda << " unidades de " << produto->getNome() << ".\n";
                     pausar(3);
                 } else {
                     std::cerr << "Quantidade insuficiente em estoque para " << produto->getNome() << ".\n";
@@ -156,12 +172,14 @@ void FacadeProduto::vendaProduto() {
     }
 
     // Salvar o valor total da venda em vendas.txt
+    std::string data = obterDataEHoraAtual();
     std::ofstream file("vendas.txt", std::ios::app);
     if (file.is_open()) {
-        file << "Venda total: " << std::fixed << std::setprecision(2) << carrinho << "R$\n";
+        file << "Venda realizada em: " << data << " Valor:" << std::fixed << std::setprecision(2) << carrinho << "R$\n";
         file.close();
     }
-
+    
+    notifyObservers(carrinho); // Notifica os observers da venda
     std::cout << "Total da venda: " << std::fixed << std::setprecision(2) << carrinho << "R$\n";
     //pausar(3);
 }
@@ -174,3 +192,18 @@ Produto* FacadeProduto::buscarProdutoPorNome(const std::string& nome) {
     }
     return nullptr;
 }
+
+void FacadeProduto::addObserver(Observer* observer) {
+    observers.push_back(observer);
+}
+
+void FacadeProduto::removeObserver(Observer* observer) {
+    observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+}
+
+void FacadeProduto::notifyObservers(float valorVenda) {
+    for (auto& observer : observers) {
+        observer->update(valorVenda);
+    }
+}
+
