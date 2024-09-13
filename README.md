@@ -36,9 +36,17 @@ Este é um sistema simples de gestão de produtos, desenvolvido em C++, que perm
 
 ## Estrutura do Código
 
-- **`main.cpp`**: Contém a lógica do menu principal e interação com o usuário.
+- **`main.cpp`**: Apenas instancia uma Fachada para manipular os produtos e um Command para iniciar o menu.
+- **`ProdutoFactory.hpp`**: Classe base para o padrão Factory Method.
 - **`Produto.cpp/hpp`**: Classe para criação e manipulação de produtos.
+- **`Produto.hpp`**: Subclasse de **`Produto.cpp/hpp`** que sobrescreve o método toString() para possibilitar a adição de produtos por Quilograma ao estoque.
 - **`FacadeProduto.cpp/hpp`**: Implementa o padrão Facade para centralizar o gerenciamento de produtos.
+- **`Command.hpp`**: Classe base para o padrão Command.
+- **`ExibirMenuCommand.hpp`**, **`LimparEntradaCommand.hpp`**, **`LimparTelaCommand.hpp`**, **`PausarTelaCommand.hpp`**, **`AguardarEntradaCommand`**: Manipulações da interface do menu via padrão Command.
+- **`Observer.hpp`**: Classe base para o padrão Observer.
+- **`CaixaObserver`**: Subclasse implementadora do padrão Observer diretamente para o arquivo **`caixa.txt`**.
+- **`DescontoStrategy`**: Classe base para o padrão Strategy.
+- **`DescontoPercentual.hpp`**: Subclasse que implementa o desconto em percentual.
 
 ## Contribuição
 
