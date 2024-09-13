@@ -47,6 +47,9 @@ Este é um sistema simples de gestão de produtos, desenvolvido em C++, que perm
 - **`CaixaObserver`**: Subclasse implementadora do padrão Observer diretamente para o arquivo **`caixa.txt`**.
 - **`DescontoStrategy`**: Classe base para o padrão Strategy.
 - **`DescontoPercentual.hpp`**: Subclasse que implementa o desconto em percentual.
+- **`produtos.txt`**: Arquivo de armazenamento de produtos.
+- **`vendas.txt`**: Aqruivo que registra logs das vendas.
+- **`caixa.txt`**: Arquivo para manutenção da carteira do usuário.
 
 ## Contribuição
 
