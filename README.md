@@ -15,6 +15,7 @@ Este é um sistema simples de gestão de produtos, desenvolvido em C++, que perm
 - **Facade**: Para simplificar a interação com os módulos de gerenciamento de produtos.
 - **Observer**: Observa o método de venda e notifica o caixa a cada nova venda somando no seu valor atual.
 - **Command**: Encapsula o funcionamento do menu principal.
+- **Factory Method**: Permite a utilização de produtos por Quilograma 
   
 ## Como Executar
 
