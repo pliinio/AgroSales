@@ -40,27 +40,36 @@ void FacadeProduto::loadProdutos() {
         std::string line;
         while (std::getline(file, line)) {
             std::istringstream iss(line);
+            std::string tipo;
             int id, quantidade;
             float preco;
-            std::string nome, tipo;
-
-            if (iss >> id >> std::ws && std::getline(iss, nome, ' ') && iss >> preco >> quantidade) {
-                // Determina se é Produto ou ProdutoKg com base na string "tipo"
-                if (nome.find("kg") != std::string::npos) {
-                    produtos.push_back(new ProdutoKg(id, nome, preco, quantidade));
+            std::string nome;
+            
+            if (iss >> tipo >> id >> std::ws && std::getline(iss, nome, ' ') && iss >> preco >> quantidade) {
+                Produto* produto = nullptr;
+                if (tipo == "KG") {
+                    produto = new ProdutoKg(id, nome, preco, quantidade);
                 } else {
-                    produtos.push_back(new Produto(id, nome, preco, quantidade));
+                    produto = new Produto(id, nome, preco, quantidade);
                 }
+                produtos.push_back(produto);
             }
         }
         file.close();
     }
 }
 
+
 void FacadeProduto::saveProdutos() {
     std::ofstream file("produtos.txt");
     if (file.is_open()) {
         for (const auto& produto : produtos) {
+            // Verifica o tipo de produto e escreve a informação apropriada
+            if (dynamic_cast<ProdutoKg*>(produto)) {
+                file << "KG ";
+            } else {
+                file << "UN ";
+            }
             file << produto->getId() << " "
                  << produto->getNome() << " "
                  << produto->getPreco() << " "
@@ -69,6 +78,7 @@ void FacadeProduto::saveProdutos() {
         file.close();
     }
 }
+
 
 
 void FacadeProduto::cadastrarProduto(const Produto& produto) {
