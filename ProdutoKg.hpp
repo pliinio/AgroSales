@@ -12,6 +12,7 @@ public:
         : Produto(id, nome, preco, quantidade) {}
 
     std::string toString() const override {
+	setlocale(LC_ALL, "pt_BR.UTF-8");
         std::stringstream ss;
         ss << "Id: " << getId()
            << " Produto: " << getNome()

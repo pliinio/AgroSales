@@ -23,10 +23,11 @@ public:
     bool existsProduto(int id);
     void vendaProduto(void);
     Produto* buscarProdutoPorNome(const std::string& nome);
+    void exibirSaldoCaixa();
 
     void addObserver(Observer* observer);
     void removeObserver(Observer* observer);
-
+    void exibirVendas();
 
 
 private:

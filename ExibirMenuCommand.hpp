@@ -17,6 +17,7 @@ public:
     explicit ExibirMenuCommand(FacadeProduto& facade) : facade(facade) {}
 
     void execute() override {
+        setlocale(LC_ALL, "pt_BR.UTF-8");
         LimparTelaCommand limparTela;
         PausarTelaCommand pausarTela(3);
         LimparEntradaCommand limparEntrada;
@@ -27,13 +28,18 @@ public:
 
         while (true) {
             limparTela.execute();
-            std::cout << "Menu:\n";
-            std::cout << "1. Cadastrar Produto\n";
-            std::cout << "2. Entrada de Material\n";
-            std::cout << "3. Registrar Venda\n";
-            std::cout << "4. Exibir Dados\n";
-            std::cout << "5. Sair e Salvar\n";
-            std::cout << "Escolha uma opção: ";
+            std::cout << "MENU PRINCIPAL\n";
+            std::cout << "+--------------------------------------+\n";
+            std::cout << "| 1. CADASTRAR PRODUTO                 |\n";
+            std::cout << "| 2. ENTRADA DE MATERIAL               |\n";
+            std::cout << "| 3. REGISTRAR VENDA                   |\n";
+            std::cout << "| 4. EXIBIR ESTOQUE                    |\n";
+            std::cout << "| 5. EXIBIR SALDO EM CAIXA             |\n";
+            std::cout << "| 6. EXIBIR VENDAS                     |\n";
+            std::cout << "| 7. SAIR E SALVAR                     |\n";
+            std::cout << "+--------------------------------------+\n";
+            std::cout << "ESCOLHA UMA OPÇÃO: ";
+
 
             int opcao;
             std::cin >> opcao;
@@ -41,12 +47,14 @@ public:
 
             switch (opcao) {
                 case 1: {
+                    setlocale(LC_ALL, "pt_BR.UTF-8");
                     int id;
                     std::string nome;
                     float preco;
                     int quantidade;
                     std::string tipo;
 
+                    
                     std::cout << "Digite o Id do produto: ";
                     std::cin >> id;
                     limparEntrada.execute();
@@ -116,7 +124,17 @@ public:
                     aguardarEntrada.execute();
                     break;
                 }
-                case 5:
+                case 5:{
+                    limparTela.execute();
+                    facade.exibirSaldoCaixa();
+                    break;
+                }
+                case 6:{
+                    limparTela.execute();
+                    facade.exibirVendas();
+                    break;
+                }
+                case 7:
                     facade.saveProdutos();
                     std::cout << "Dados salvos. Saindo...\n";
                     return;

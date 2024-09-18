@@ -5,7 +5,6 @@
 #include "AguardarEntradaCommand.hpp"
 #include "LimparEntradaCommand.hpp"
 #include "ProdutoFactory.hpp"
-#include "DescontoFixo.hpp"
 #include "DescontoPercentual.hpp"
 #include "ProdutoKg.hpp"
 #include <iomanip>
@@ -14,6 +13,7 @@
 #include <sstream>
 #include <algorithm>
 #include <chrono>
+
 
 std::string obterDataEHoraAtual() {
     // Obter o tempo atual
@@ -36,6 +36,7 @@ FacadeProduto& FacadeProduto::getInstance() {
 }
 
 void FacadeProduto::loadProdutos() {
+    setlocale(LC_ALL, "pt_BR.UTF-8");
     std::ifstream file("produtos.txt");
     if (file.is_open()) {
         produtos.clear(); // Limpa a lista antes de carregar novos dados
@@ -61,6 +62,7 @@ void FacadeProduto::loadProdutos() {
 
 
 void FacadeProduto::saveProdutos() {
+    setlocale(LC_ALL, "pt_BR.UTF-8");
     std::ofstream file("produtos.txt");
     if (file.is_open()) {
         for (const auto& produto : produtos) {
@@ -99,6 +101,7 @@ bool FacadeProduto::existsNomeProduto(const std::string& nome) {
 
 
 void FacadeProduto::entradaMaterial(int id, int quantidadeAdicional) {
+    setlocale(LC_ALL, "pt_BR.UTF-8");
     for (auto& produto : produtos) {
         if (produto->getId() == id) {
             int novaQuantidade = produto->getQuantidade() + quantidadeAdicional;
@@ -122,6 +125,7 @@ Produto* FacadeProduto::buscarProduto(int id) {
 }
 
 void FacadeProduto::exibirEstoque() {
+    setlocale(LC_ALL, "pt_BR.UTF-8");
     for (const auto& produto : produtos) {
         std::cout << produto->toString() << std::endl;
     }
@@ -129,6 +133,7 @@ void FacadeProduto::exibirEstoque() {
 
 
 void FacadeProduto::vendaProduto() {
+    setlocale(LC_ALL, "pt_BR.UTF-8");
     std::string nome;
     int quantidadeVenda;
     float carrinho = 0.0;
@@ -181,7 +186,7 @@ void FacadeProduto::vendaProduto() {
                     carrinho += totalItem;
                     produto->setQuantidade(produto->getQuantidade() - quantidadeVenda);
                     saveProdutos();
-                    std::cout << "Adicionado ao carrinho " << quantidadeVenda << " unidades de " << produto->getNome() << ".\n";
+                    std::cout << "Adicionado ao carrinho " << quantidadeVenda << " " << produto->getNome() << ".\n";
                     pausarTela.execute();
                 } else {
                     std::cerr << "Quantidade insuficiente em estoque para " << produto->getNome() << ".\n";
@@ -242,3 +247,44 @@ void FacadeProduto::notifyObservers(float valorVenda) {
     }
 }
 
+void FacadeProduto::exibirSaldoCaixa() {
+    std::ifstream caixaFile("caixa.txt");
+    if (!caixaFile.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo caixa.txt!" << std::endl;
+        return;
+    }
+
+    float saldo = 0.0f;
+    std::string linha;
+
+    // Lê cada linha do arquivo e soma os valores
+    while (std::getline(caixaFile, linha)) {
+        try {
+            saldo += std::stof(linha); // Converte a string para float e soma
+        } catch (const std::invalid_argument&) {
+            std::cerr << "Erro: linha inválida no arquivo caixa.txt." << std::endl;
+        }
+    }
+
+    caixaFile.close();
+
+    std::cout << "Saldo total em caixa: " << saldo << "R$" << std::endl;
+}
+
+void FacadeProduto::exibirVendas() {
+    std::ifstream arquivoVendas("vendas.txt");
+
+    if (!arquivoVendas.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de vendas." << std::endl;
+        return;
+    }
+
+    std::string linha;
+    std::cout << "=== Vendas Realizadas ===" << std::endl;
+
+    while (getline(arquivoVendas, linha)) {
+        std::cout << linha << std::endl;
+    }
+
+    arquivoVendas.close();
+}
