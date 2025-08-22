@@ -22,7 +22,7 @@ Este é um sistema simples de gestão de produtos, desenvolvido em C++, que perm
 
 1. Clone o repositório:
     ```bash
-    git clone https://github.com/seu-usuario/AgroSales.git
+    git clone https://github.com/pliinio/AgroSales.git
     cd AgroSales
     ```
 2. Compile o projeto:
